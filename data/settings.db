@@ -1,0 +1,5 @@
+{"key":"voting_active","value":true,"_id":"c0PwUNLqoUC6aunk"}
+{"key":"winner_project_id","value":null,"_id":"qRAScFBMgRHOfpUP"}
+{"key":"winner_declared","value":false,"_id":"vN5EN1nlJNXhi6WW"}
+{"$$indexCreated":{"fieldName":"key","unique":true,"sparse":false}}
+{"$$indexCreated":{"fieldName":"key","unique":true}}

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thank You! – ExpoVote Live</title>
+    <meta name="description" content="Thank you for voting in ExpoVote Live!" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .ty-card {
+            max-width: 520px;
+            width: 90%;
+            margin: 2rem auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 3.5rem 2.5rem;
+            box-shadow: var(--shadow-glow);
+            animation: zoomIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .ty-emoji {
+            font-size: 5rem;
+            display: block;
+            margin-bottom: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .ty-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin-bottom: 0.75rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .ty-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .votes-display {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .vote-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+        }
+
+        .vote-dot.used {
+            background: var(--primary);
+            box-shadow: 0 0 12px var(--primary);
+        }
+
+        .vote-dot.available {
+            background: rgba(108, 99, 255, 0.2);
+            border: 2px solid rgba(108, 99, 255, 0.4);
+        }
+
+        .ty-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9000;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="confetti-canvas"></canvas>
+    <div class="ty-card">
+        <span class="ty-emoji">🎉</span>
+        <h1 class="ty-title">Thank You!</h1>
+        <p class="ty-subtitle">
+            Your votes have been submitted successfully!<br>
+            You've used all 3 of your votes. Check the live leaderboard to see how your picks are doing.
+        </p>
+        <div class="votes-display">
+            <div class="vote-dot used"></div>
+            <div class="vote-dot used"></div>
+            <div class="vote-dot used"></div>
+        </div>
+        <div class="ty-actions">
+            <a href="/leaderboard" class="btn btn-primary btn-lg">📊 Live Leaderboard</a>
+            <a href="/vote" class="btn btn-outline">← Back to Vote</a>
+        </div>
+    </div>
+    <script>
+        (function startConfetti() {
+            var canvas = document.getElementById('confetti-canvas');
+            var ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            var colors = ['#FFD700', '#FF6584', '#6C63FF', '#00D4AA', '#FF9F43', '#fff', '#ff8ef4'];
+            var pieces = [];
+            for (var i = 0; i < 180; i++) {
+                pieces.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height - canvas.height, size: Math.random() * 10 + 5, color: colors[Math.floor(Math.random() * colors.length)], speed: Math.random() * 3 + 1, rotation: Math.random() * 360, rotSpeed: (Math.random() - 0.5) * 5, drift: (Math.random() - 0.5) * 2 });
+            }
+            var animId;
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                var active = false;
+                pieces.forEach(function (p) {
+                    p.y += p.speed; p.x += p.drift; p.rotation += p.rotSpeed;
+                    if (p.y < canvas.height + 20) active = true;
+                    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.fillStyle = p.color; ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.5); ctx.restore();
+                });
+                if (active) animId = requestAnimationFrame(draw);
+                else { canvas.style.display = 'none'; cancelAnimationFrame(animId); }
+            }
+            draw();
+        })();
+    </script>
+</body>
+
+</html>

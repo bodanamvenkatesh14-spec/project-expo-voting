@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login – TECH FORGE 2k26</title>
+    <meta name="description" content="Admin login for TECH FORGE 2k26 voting system." />
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            margin: 2rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-glow);
+            animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-logo .icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 0.5rem;
+            animation: float 3s infinite;
+        }
+
+        .login-logo h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-logo p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .login-error {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 0.85rem 1rem;
+            color: var(--danger);
+            font-size: 0.88rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="toast-container"></div>
+    <div class="login-card">
+        <div class="login-logo">
+            <span class="icon">🔐</span>
+            <h1>Admin Login</h1>
+            <p>TECH FORGE 2k26 Control Panel</p>
+        </div>
+        <div class="login-error" id="login-error"></div>
+        <form id="login-form" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" placeholder="Enter admin username"
+                    autocomplete="username" required />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Enter password"
+                    autocomplete="current-password" required />
+            </div>
+            <button type="submit" class="btn btn-primary btn-full" id="login-btn">
+                🔐 Sign In
+            </button>
+        </form>
+        <div style="text-align:center;margin-top:1.5rem;">
+            <a href="/vote" style="color:var(--text-muted);font-size:0.85rem;text-decoration:none;">← Back to Vote</a>
+        </div>
+    </div>
+    <script>
+        // Redirect if already logged in
+        if (localStorage.getItem('evl_admin_token')) {
+            try {
+                fetch('/api/auth/verify', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('evl_admin_token') } })
+                    .then(r => r.json()).then(d => { if (d.success) window.location.href = '/admin'; });
+            } catch (e) { }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('login-btn');
+            const errEl = document.getElementById('login-error');
+            btn.disabled = true; btn.textContent = 'Signing in...';
+            errEl.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: document.getElementById('username').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('evl_admin_token', data.token);
+                    localStorage.setItem('evl_admin_user', data.username);
+                    window.location.href = '/admin';
+                } else {
+                    errEl.textContent = data.message || 'Invalid credentials.';
+                    errEl.style.display = 'block';
+                }
+            } catch (ex) {
+                errEl.textContent = 'Network error. Please try again.';
+                errEl.style.display = 'block';
+            } finally {
+                btn.disabled = false; btn.textContent = 'Sign In';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Live Leaderboard – TECH FORGE 2k26</title>
+    <meta name="description"
+        content="Real-time animated leaderboard showing the current rankings for all projects in the expo." />
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+        .lb-header {
+            padding: 2.5rem 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .lb-title {
+            font-size: clamp(1.6rem, 4vw, 2.5rem);
+            font-weight: 900;
+        }
+
+        .lb-controls {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .podium {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem 1rem;
+        }
+
+        .podium-item {
+            flex: 1;
+            max-width: 280px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .podium-crown {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            animation: float 2s infinite;
+        }
+
+        .podium-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-bottom: 0.75rem;
+        }
+
+        .place-1 .podium-avatar {
+            background: var(--gradient-gold);
+            box-shadow: var(--shadow-gold);
+            width: 96px;
+            height: 96px;
+        }
+
+        .place-2 .podium-avatar {
+            background: var(--gradient-silver);
+            box-shadow: 0 0 20px rgba(192, 192, 192, 0.3);
+        }
+
+        .place-3 .podium-avatar {
+            background: var(--gradient-bronze);
+            box-shadow: 0 0 20px rgba(205, 127, 50, 0.3);
+        }
+
+        .podium-name {
+            font-weight: 800;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .podium-team {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .podium-votes {
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 0.35rem 0.9rem;
+            border-radius: 999px;
+        }
+
+        .place-1 .podium-votes {
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            color: var(--gold);
+        }
+
+        .place-2 .podium-votes {
+            background: rgba(192, 192, 192, 0.2);
+            border: 1px solid rgba(192, 192, 192, 0.4);
+            color: var(--silver);
+        }
+
+        .place-3 .podium-votes {
+            background: rgba(205, 127, 50, 0.2);
+            border: 1px solid rgba(205, 127, 50, 0.4);
+            color: var(--bronze);
+        }
+
+        .podium-block {
+            width: 100%;
+            border-radius: 12px 12px 0 0;
+            margin-top: 0.75rem;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 0.5rem;
+        }
+
+        .place-1 .podium-block {
+            background: linear-gradient(180deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
+            height: 100px;
+        }
+
+        .place-2 .podium-block {
+            background: linear-gradient(180deg, rgba(192, 192, 192, 0.25), rgba(192, 192, 192, 0.08));
+            height: 70px;
+        }
+
+        .place-3 .podium-block {
+            background: linear-gradient(180deg, rgba(205, 127, 50, 0.25), rgba(205, 127, 50, 0.08));
+            height: 50px;
+        }
+
+        .lb-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .lb-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            transition: var(--transition);
+        }
+
+        .lb-item:hover {
+            border-color: rgba(108, 99, 255, 0.4);
+            box-shadow: var(--shadow-glow);
+            transform: translateX(4px);
+        }
+
+        .lb-item.rank-1 {
+            border-color: rgba(255, 215, 0, 0.4);
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.06), var(--bg-card));
+        }
+
+        .lb-item.rank-2 {
+            border-color: rgba(192, 192, 192, 0.3);
+            background: linear-gradient(90deg, rgba(192, 192, 192, 0.04), var(--bg-card));
+        }
+
+        .lb-item.rank-3 {
+            border-color: rgba(205, 127, 50, 0.3);
+            background: linear-gradient(90deg, rgba(205, 127, 50, 0.04), var(--bg-card));
+        }
+
+        .lb-item.winner-highlight {
+            border-color: var(--gold) !important;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3) !important;
+            animation: winnerPulse 2s infinite;
+        }
+
+        .lb-rank {
+            font-size: 1.4rem;
+            font-weight: 900;
+            min-width: 40px;
+            text-align: center;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .lb-rank.r-1 {
+            color: var(--gold);
+        }
+
+        .lb-rank.r-2 {
+            color: var(--silver);
+        }
+
+        .lb-rank.r-3 {
+            color: var(--bronze);
+        }
+
+        .lb-rank.r-other {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .lb-info {
+            flex: 1;
+        }
+
+        .lb-project-name {
+            font-weight: 800;
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .lb-team {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .lb-bar-wrap {
+            flex: 2;
+        }
+
+        .lb-bar-track {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 999px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .lb-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: var(--gradient-primary);
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 0%;
+        }
+
+        .lb-item.rank-1 .lb-bar-fill {
+            background: var(--gradient-gold);
+        }
+
+        .lb-item.rank-2 .lb-bar-fill {
+            background: var(--gradient-silver);
+        }
+
+        .lb-item.rank-3 .lb-bar-fill {
+            background: var(--gradient-bronze);
+        }
+
+        .lb-votes {
+            font-size: 1.2rem;
+            font-weight: 800;
+            min-width: 70px;
+            text-align: right;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .lb-votes span {
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .winner-card {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 165, 0, 0.08));
+            border: 2px solid var(--gold);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: zoomIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: none;
+        }
+
+        .winner-card.show {
+            display: block;
+        }
+
+        .winner-trophy {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            display: block;
+            animation: float 2s infinite;
+        }
+
+        .winner-title {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .winner-name {
+            font-size: 2rem;
+            font-weight: 900;
+            font-family: 'Outfit', sans-serif;
+            margin-bottom: 0.25rem;
+        }
+
+        .winner-votes {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--gold);
+        }
+
+        .lb-status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+        }
+
+        .lb-status-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .lb-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        body.fullscreen-mode .navbar {
+            display: none;
+        }
+
+        body.fullscreen-mode .page-wrapper {
+            padding-top: 0;
+        }
+
+        body.fullscreen-mode .lb-controls {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+        }
+
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9000;
+            display: none;
+        }
+
+        .fastest-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.15rem 0.6rem;
+            border-radius: 999px;
+            background: rgba(0, 212, 170, 0.15);
+            border: 1px solid rgba(0, 212, 170, 0.3);
+            color: var(--success);
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        @keyframes winnerPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="/vote" class="navbar-brand">🗳️ TECH FORGE 2k26</a>
+        <div class="navbar-logo-container">
+            <img src="/images/ainnovate-logo.png" alt="AINNOVATE Logo" class="navbar-logo">
+        </div>
+        <div class="navbar-links">
+            <a href="/vote">Vote</a>
+            <a href="/leaderboard" class="active">Leaderboard</a>
+            <a href="/admin/login">Admin</a>
+        </div>
+    </nav>
+
+    <canvas id="confetti-canvas"></canvas>
+    <div id="toast-container"></div>
+
+    <div class="page-wrapper">
+        <div class="container">
+            <div class="lb-header">
+                <div>
+                    <h1 class="lb-title">📊 Live <span
+                            style="background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Leaderboard</span>
+                    </h1>
+                    <p style="color:var(--text-secondary);font-size:0.9rem;margin-top:0.25rem;">Auto-updates in
+                        real-time as votes are cast</p>
+                </div>
+                <div class="lb-controls">
+                    <button class="btn btn-outline btn-sm" id="fullscreen-btn"
+                        onclick="toggleFullscreen()">Fullscreen</button>
+                    <a href="/vote" class="btn btn-primary btn-sm">Vote Now</a>
+                </div>
+            </div>
+
+            <div class="lb-status-bar">
+                <div class="lb-status-left">
+                    <span class="status-dot inactive" id="voting-dot"></span>
+                    <span id="voting-status-lb">Checking...</span>
+                </div>
+                <div class="lb-meta">
+                    <span id="total-votes-meta">Total Votes: – | Projects: –</span>
+                    <span id="update-time-meta" style="margin-left:0.5rem;"></span>
+                </div>
+            </div>
+
+            <div class="winner-card" id="winner-card">
+                <span class="winner-trophy">🏆</span>
+                <div class="winner-title">Winner Declared!</div>
+                <div class="winner-name" id="winner-name">–</div>
+                <div class="winner-team" id="winner-team" style="color:var(--text-secondary);margin-bottom:1rem;">–
+                </div>
+                <div class="winner-votes" id="winner-votes">– votes</div>
+            </div>
+
+            <div id="podium-section" style="display:none;">
+                <div class="podium" id="podium"></div>
+            </div>
+
+            <div class="lb-list" id="lb-list">
+                <div style="text-align:center;padding:3rem;">
+                    <div class="spinner"></div>
+                    <p style="color:var(--text-muted);margin-top:1rem;">Loading rankings...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let prevVoteCounts = {};
+
+        function toast(msg, type, duration) {
+            type = type || 'info'; duration = duration || 4000;
+            const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+            const el = document.createElement('div');
+            el.className = 'toast toast-' + type;
+            el.innerHTML = '<span>' + icons[type] + '</span><span>' + msg + '</span>';
+            document.getElementById('toast-container').appendChild(el);
+            setTimeout(function () { el.style.animation = 'slideInRight 0.3s ease-out reverse'; setTimeout(function () { el.remove(); }, 300); }, duration);
+        }
+
+        function rankIcon(r) {
+            if (r === 1) return '🥇'; if (r === 2) return '🥈'; if (r === 3) return '🥉';
+            return '#' + r;
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, function (s) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s]; });
+        }
+
+        function getInitials(name) { return name.split(' ').map(function (w) { return w[0] || ''; }).join('').substring(0, 2).toUpperCase(); }
+
+        function renderLeaderboard(projects, votingActive, winnerDeclared, winner) {
+            var maxVotes = projects.length > 0 ? Math.max.apply(null, projects.map(function (p) { return p.vote_count; })) : 0;
+            if (maxVotes < 1) maxVotes = 1;
+            var totalVotes = projects.reduce(function (s, p) { return s + p.vote_count; }, 0);
+
+            var dot = document.getElementById('voting-dot');
+            var statusText = document.getElementById('voting-status-lb');
+            dot.className = 'status-dot ' + (votingActive ? 'active' : 'inactive');
+            statusText.textContent = winnerDeclared ? 'Winner Declared – Voting Closed' : (votingActive ? 'Voting OPEN – Live Updates' : 'Voting Closed');
+            statusText.style.color = winnerDeclared ? 'var(--gold)' : (votingActive ? 'var(--success)' : 'var(--danger)');
+
+            document.getElementById('total-votes-meta').textContent = 'Total Votes: ' + totalVotes + ' | Projects: ' + projects.length;
+            document.getElementById('update-time-meta').textContent = '| Updated: ' + new Date().toLocaleTimeString();
+
+            if (winnerDeclared && winner) {
+                var wc = document.getElementById('winner-card');
+                wc.classList.add('show');
+                document.getElementById('winner-name').textContent = winner.project_name;
+                document.getElementById('winner-team').textContent = 'by ' + winner.team_name;
+                document.getElementById('winner-votes').textContent = winner.vote_count + ' votes';
+            }
+
+            renderPodium(projects.slice(0, 3));
+
+            var list = document.getElementById('lb-list');
+            list.innerHTML = '';
+            if (projects.length === 0) {
+                list.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text-muted);">No projects yet. Check back soon!</div>';
+                return;
+            }
+
+            projects.forEach(function (p, i) {
+                var rank = i + 1;
+                var pct = Math.round((p.vote_count / maxVotes) * 100);
+                var isWinner = p.is_winner;
+                var rankClass = rank <= 3 ? 'rank-' + rank : 'rank-other';
+                var item = document.createElement('div');
+                item.className = 'lb-item ' + rankClass + (isWinner ? ' winner-highlight' : '');
+                item.id = 'lb-item-' + p._id;
+                item.innerHTML =
+                    '<div class="lb-rank ' + (rank <= 3 ? 'r-' + rank : 'r-other') + '">' + rankIcon(rank) + '</div>' +
+                    '<div class="lb-info">' +
+                    '<div class="lb-project-name">' + escapeHtml(p.project_name) + (isWinner ? ' <span style="color:var(--gold)">🏆</span>' : '') + '</div>' +
+                    '<div class="lb-team">Team: ' + escapeHtml(p.team_name) + ' <span class="badge badge-primary">' + escapeHtml(p.category || 'General') + '</span></div>' +
+                    '</div>' +
+                    '<div class="lb-bar-wrap">' +
+                    '<div class="lb-bar-track"><div class="lb-bar-fill" style="width:0%" data-pct="' + pct + '"></div></div>' +
+                    '<div style="font-size:0.74rem;color:var(--text-muted);margin-top:0.3rem;">' + pct + '% of leader</div>' +
+                    '</div>' +
+                    '<div class="lb-votes">' + p.vote_count + ' <span>votes</span></div>';
+                list.appendChild(item);
+
+                setTimeout(function () {
+                    var bar = item.querySelector('.lb-bar-fill');
+                    if (bar) bar.style.width = pct + '%';
+                }, 100 + i * 50);
+            });
+
+            prevVoteCounts = {};
+            projects.forEach(function (p) { prevVoteCounts[p._id] = p.vote_count; });
+        }
+
+        function renderPodium(top3) {
+            if (top3.length === 0) return;
+            var podiumEl = document.getElementById('podium');
+            podiumEl.innerHTML = '';
+            // Display order: 2nd, 1st, 3rd
+            var displayOrder = [top3[1], top3[0], top3[2]];
+            var placeMap = [2, 1, 3];
+            displayOrder.forEach(function (p, di) {
+                if (!p) return;
+                var place = placeMap[di];
+                var item = document.createElement('div');
+                item.className = 'podium-item place-' + place;
+                item.innerHTML =
+                    (place === 1 ? '<div class="podium-crown">👑</div>' : '') +
+                    '<div class="podium-avatar">' + getInitials(p.project_name) + '</div>' +
+                    '<div class="podium-name">' + escapeHtml(p.project_name) + '</div>' +
+                    '<div class="podium-team">' + escapeHtml(p.team_name) + '</div>' +
+                    '<div class="podium-votes">' + p.vote_count + ' votes</div>' +
+                    '<div class="podium-block"><span style="font-size:1.5rem">' + (place === 1 ? '🥇' : place === 2 ? '🥈' : '🥉') + '</span></div>';
+                podiumEl.appendChild(item);
+            });
+            document.getElementById('podium-section').style.display = 'block';
+        }
+
+        async function loadLeaderboard() {
+            try {
+                var pRes = await fetch('/api/projects');
+                var sRes = await fetch('/api/admin/status');
+                var pData = await pRes.json();
+                var sData = await sRes.json();
+                if (pData.success && sData.success) {
+                    renderLeaderboard(pData.projects, sData.voting_active, sData.winner_declared, sData.winner);
+                }
+            } catch (e) {
+                document.getElementById('lb-list').innerHTML = '<div style="text-align:center;padding:3rem;color:var(--danger);">Failed to load. Please refresh.</div>';
+            }
+        }
+
+        socket.on('vote_update', function (data) { renderLeaderboard(data.projects, true, false, null); toast('New vote registered!', 'info', 2000); });
+        socket.on('voting_started', function () { toast('Voting has started!', 'success'); loadLeaderboard(); });
+        socket.on('voting_stopped', function () { toast('Voting has been stopped.', 'warning'); loadLeaderboard(); });
+        socket.on('winner_declared', function (data) { toast('Winner declared: ' + data.winner.project_name, 'success', 6000); loadLeaderboard(); startConfetti(); });
+        socket.on('system_reset', function (data) { toast('System reset. All votes cleared.', 'info'); renderLeaderboard(data.projects, false, false, null); });
+        socket.on('project_added', function () { loadLeaderboard(); });
+        socket.on('project_deleted', function () { loadLeaderboard(); });
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+                document.body.classList.add('fullscreen-mode');
+                document.getElementById('fullscreen-btn').textContent = 'Exit Fullscreen';
+            } else {
+                document.exitFullscreen();
+                document.body.classList.remove('fullscreen-mode');
+                document.getElementById('fullscreen-btn').textContent = 'Fullscreen';
+            }
+        }
+
+        function startConfetti() {
+            var canvas = document.getElementById('confetti-canvas');
+            canvas.style.display = 'block';
+            var ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            var colors = ['#FFD700', '#FF6584', '#6C63FF', '#00D4AA', '#FF9F43', '#fff'];
+            var pieces = [];
+            for (var i = 0; i < 220; i++) {
+                pieces.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height - canvas.height, size: Math.random() * 10 + 5, color: colors[Math.floor(Math.random() * colors.length)], speed: Math.random() * 3 + 1, rotation: Math.random() * 360, rotSpeed: (Math.random() - 0.5) * 5, drift: (Math.random() - 0.5) * 2 });
+            }
+            var animId;
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                var active = false;
+                pieces.forEach(function (p) {
+                    p.y += p.speed; p.x += p.drift; p.rotation += p.rotSpeed;
+                    if (p.y < canvas.height + 20) active = true;
+                    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.fillStyle = p.color; ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.5); ctx.restore();
+                });
+                if (active) animId = requestAnimationFrame(draw);
+                else { canvas.style.display = 'none'; cancelAnimationFrame(animId); }
+            }
+            draw();
+            setTimeout(function () { cancelAnimationFrame(animId); canvas.style.display = 'none'; }, 8000);
+        }
+
+        loadLeaderboard();
+        setInterval(loadLeaderboard, 10000);
+    </script>
+</body>
+
+</html>

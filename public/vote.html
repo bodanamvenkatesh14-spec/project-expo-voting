@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vote – TECH FORGE 2k26</title>
+    <meta name="description" content="Cast your vote for the best project at the expo. You have 3 votes to use!" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+        .vote-header {
+            padding: 3rem 0 1.5rem;
+            text-align: center;
+        }
+
+        .vote-header h1 {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 900;
+        }
+
+        .vote-header p {
+            color: var(--text-secondary);
+            margin-top: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .vote-status-bar {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .vote-status-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .vote-counter-display {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .project-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .project-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .project-card:hover::before {
+            opacity: 0.04;
+        }
+
+        .project-card.voted {
+            border-color: var(--success);
+        }
+
+        .project-card.voted::after {
+            content: '✓';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--success);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .project-rank {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .project-name {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 0.4rem;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .project-team {
+            font-size: 0.85rem;
+            color: var(--primary-light);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .project-desc {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.25rem;
+        }
+
+        .project-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .project-votes-count {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .vote-btn {
+            padding: 0.6rem 1.3rem;
+            border-radius: var(--radius-sm);
+            background: var(--gradient-primary);
+            color: #fff;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .vote-btn:hover {
+            box-shadow: 0 4px 16px rgba(108, 99, 255, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .vote-btn:disabled {
+            background: rgba(108, 99, 255, 0.3);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Vote limit message */
+        .limit-banner {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: var(--radius);
+            padding: 1.25rem 1.75rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .limit-banner.show {
+            display: flex;
+        }
+
+        .limit-banner-icon {
+            font-size: 1.75rem;
+        }
+
+        .limit-banner-text {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* Voting closed banner */
+        .closed-banner {
+            text-align: center;
+            padding: 4rem 1.5rem;
+        }
+
+        .closed-banner-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Search bar */
+        .search-bar {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-bar input {
+            padding-left: 3rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Category filter */
+        .category-filters {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .cat-btn {
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .cat-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        .cat-btn:hover:not(.active) {
+            border-color: var(--primary);
+            color: var(--primary-light);
+        }
+
+        #loading-overlay {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 4rem;
+        }
+
+        #loading-overlay p {
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="/vote" class="navbar-brand">🗳️ TECH FORGE 2k26</a>
+        <div class="navbar-logo-container">
+            <img src="/images/ainnovate-logo.png" alt="AINNOVATE Logo" class="navbar-logo">
+        </div>
+        <div class="navbar-links">
+            <a href="/vote" class="active">Vote</a>
+            <a href="/leaderboard">Leaderboard</a>
+            <a href="/admin/login">Admin</a>
+        </div>
+    </nav>
+
+    <div id="toast-container"></div>
+
+    <div class="page-wrapper">
+        <div class="container">
+            <div class="vote-header">
+                <h1>🗳️ Cast Your <span
+                        style="background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Votes</span>
+                </h1>
+                <p>You have <strong>3 votes</strong> to distribute among your favorite projects. Make them count!</p>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="vote-status-bar" id="vote-status-bar">
+                <div class="vote-status-left">
+                    <span id="voting-indicator" class="status-dot inactive"></span>
+                    <span id="voting-status-text" style="font-weight:600;font-size:0.9rem;">Checking status...</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+                    <span style="font-size:0.85rem;color:var(--text-secondary);">Your Votes:</span>
+                    <div class="vote-counter-display" id="vote-counter-dots">
+                        <div class="vote-dot available"></div>
+                        <div class="vote-dot available"></div>
+                        <div class="vote-dot available"></div>
+                    </div>
+                    <span id="votes-remaining-text" style="font-size:0.85rem;color:var(--text-muted);">3
+                        remaining</span>
+                </div>
+            </div>
+
+            <!-- Limit Banner -->
+            <div class="limit-banner" id="limit-banner">
+                <span class="limit-banner-icon">⚠️</span>
+                <span class="limit-banner-text" id="limit-banner-text">You have used all 3 votes. Thank you for
+                    participating!</span>
+            </div>
+
+            <!-- Closed Banner -->
+            <div id="closed-state" style="display:none;">
+                <div class="closed-banner">
+                    <div class="closed-banner-icon">🔒</div>
+                    <h2 style="margin-bottom:0.75rem;">Voting is Currently Closed</h2>
+                    <p style="color:var(--text-secondary);margin-bottom:1.5rem;">The voting has not started yet or has
+                        been closed by the organizers.<br>Check the leaderboard to see current standings.</p>
+                    <a href="/leaderboard" class="btn btn-primary btn-lg">View Leaderboard</a>
+                </div>
+            </div>
+
+            <!-- Search & Filters -->
+            <div id="filter-area" style="display:none;">
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="form-control" id="search-input" placeholder="Search projects or teams...">
+                </div>
+                <div class="category-filters" id="category-filters">
+                    <button class="cat-btn active" data-cat="all">All</button>
+                </div>
+            </div>
+
+            <!-- Projects Grid -->
+            <div id="loading-overlay">
+                <div class="spinner"></div>
+                <p>Loading projects...</p>
+            </div>
+            <div class="projects-grid" id="projects-grid" style="display:none;"></div>
+            <div id="no-projects" style="display:none; text-align:center; padding:3rem; color:var(--text-muted);">
+                <div style="font-size:3rem;margin-bottom:1rem;">📭</div>
+                <p>No projects found. Check back soon!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vote Confirm Modal -->
+    <div class="modal-overlay" id="confirm-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Confirm Your Vote</h2>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div style="margin-bottom:1.5rem;">
+                <p style="color:var(--text-secondary);margin-bottom:1rem;">You are voting for:</p>
+                <div
+                    style="background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.3);border-radius:var(--radius-sm);padding:1.25rem;">
+                    <div style="font-weight:800;font-size:1.15rem;margin-bottom:0.4rem;" id="modal-project-name"></div>
+                    <div style="color:var(--primary-light);font-size:0.9rem;margin-bottom:0.25rem;"
+                        id="modal-team-name"></div>
+                    <div style="color:var(--text-muted);font-size:0.85rem;" id="modal-votes-left"></div>
+                </div>
+            </div>
+            <div style="display:flex;gap:1rem;">
+                <button class="btn btn-outline btn-full" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary btn-full" id="confirm-vote-btn" onclick="confirmVote()">Confirm Vote
+                    🗳️</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        // Browser fingerprint (localStorage-based)
+        function getFingerprint() {
+            let fp = localStorage.getItem('evl_fp');
+            if (!fp) {
+                fp = 'fp_' + Math.random().toString(36).substr(2, 16) + Date.now().toString(36);
+                localStorage.setItem('evl_fp', fp);
+            }
+            return fp;
+        }
+
+        const FINGERPRINT = getFingerprint();
+        const socket = io();
+
+        let allProjects = [];
+        let votingActive = false;
+        let votesRemaining = 3;
+        let pendingProjectId = null;
+        let pendingProjectName = '';
+        let categories = new Set(['all']);
+
+        // Toast
+        function toast(msg, type = 'info', duration = 4000) {
+            const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+            const el = document.createElement('div');
+            el.className = `toast toast-${type}`;
+            el.innerHTML = `<span>${icons[type]}</span><span>${msg}</span>`;
+            document.getElementById('toast-container').appendChild(el);
+            setTimeout(() => { el.style.animation = 'slideInRight 0.3s ease-out reverse'; setTimeout(() => el.remove(), 300); }, duration);
+        }
+
+        // Update vote counter dots
+        function updateVoteDots(used, max = 3) {
+            const container = document.getElementById('vote-counter-dots');
+            container.innerHTML = '';
+            for (let i = 0; i < max; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'vote-dot ' + (i < used ? 'used' : 'available');
+                container.appendChild(dot);
+            }
+            const remaining = max - used;
+            document.getElementById('votes-remaining-text').textContent = remaining + ' remaining';
+            votesRemaining = remaining;
+
+            if (remaining === 0) {
+                document.getElementById('limit-banner-text').textContent = '❌ You have reached the maximum 3 votes limit from this network. Thank you!';
+                document.getElementById('limit-banner').classList.add('show');
+            }
+        }
+
+        // Check vote status and update button disabled states
+        async function checkVoteStatus() {
+            try {
+                const res = await fetch(`/api/votes/status?fingerprint=${FINGERPRINT}`);
+                const data = await res.json();
+                if (data.success) {
+                    updateVoteDots(data.votes_used, data.max_votes);
+                    // Update all vote button disabled states based on actual remaining
+                    const canVote = data.can_vote && votingActive;
+                    document.querySelectorAll('.vote-btn').forEach(btn => {
+                        btn.disabled = !canVote;
+                    });
+                }
+            } catch (e) { }
+        }
+
+        // Load projects
+        async function loadProjects() {
+            try {
+                const [projRes, statusRes] = await Promise.all([
+                    fetch('/api/projects'),
+                    fetch('/api/admin/status')
+                ]);
+                const projData = await projRes.json();
+                const statusData = await statusRes.json();
+
+                votingActive = statusData.voting_active;
+
+                document.getElementById('loading-overlay').style.display = 'none';
+
+                if (statusData.winner_declared) {
+                    showWinnerState(statusData.winner);
+                    return;
+                }
+
+                if (!votingActive) {
+                    document.getElementById('closed-state').style.display = 'block';
+                    updateVotingStatusBar(false);
+                    return;
+                }
+
+                updateVotingStatusBar(true);
+
+                if (!projData.success || projData.projects.length === 0) {
+                    document.getElementById('no-projects').style.display = 'block';
+                    return;
+                }
+
+                allProjects = projData.projects;
+
+                // Build categories
+                allProjects.forEach(p => { if (p.category) categories.add(p.category); });
+                const catFilter = document.getElementById('category-filters');
+                catFilter.innerHTML = '';
+                categories.forEach(cat => {
+                    const btn = document.createElement('button');
+                    btn.className = 'cat-btn' + (cat === 'all' ? ' active' : '');
+                    btn.dataset.cat = cat;
+                    btn.textContent = cat === 'all' ? 'All Projects' : cat;
+                    btn.onclick = () => { document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); filterProjects(); };
+                    catFilter.appendChild(btn);
+                });
+
+                document.getElementById('filter-area').style.display = 'block';
+                renderProjects(allProjects);
+                await checkVoteStatus();
+            } catch (e) {
+                console.error(e);
+                document.getElementById('loading-overlay').innerHTML = '<p style="color:var(--danger);">Failed to load projects. Please refresh.</p>';
+            }
+        }
+
+        function updateVotingStatusBar(active) {
+            const dot = document.getElementById('voting-indicator');
+            const text = document.getElementById('voting-status-text');
+            dot.className = 'status-dot ' + (active ? 'active' : 'inactive');
+            text.textContent = active ? 'Voting is OPEN' : 'Voting is CLOSED';
+            text.style.color = active ? 'var(--success)' : 'var(--danger)';
+        }
+
+        function renderProjects(projects) {
+            const grid = document.getElementById('projects-grid');
+            grid.style.display = 'grid';
+            grid.innerHTML = '';
+
+            if (projects.length === 0) {
+                document.getElementById('no-projects').style.display = 'block';
+                return;
+            }
+
+            const localVotes = JSON.parse(localStorage.getItem('evl_voted') || '[]');
+            projects.forEach((p, i) => {
+                const voted = localVotes.includes(p._id);
+                const card = document.createElement('div');
+                card.className = 'project-card' + (voted ? ' voted' : '');
+                card.style.animationDelay = (i * 0.05) + 's';
+                card.id = 'pcard-' + p._id;
+                // Always render buttons enabled - checkVoteStatus will disable them if needed
+                card.innerHTML = `
+          <div class="project-rank">#${i + 1} &nbsp; <span class="badge badge-primary">${p.category || 'General'}</span></div>
+          <div class="project-name">${escapeHtml(p.project_name)}</div>
+          <div class="project-team">👥 ${escapeHtml(p.team_name)}</div>
+          <div class="project-desc">${escapeHtml(p.description)}</div>
+          <div class="project-footer">
+            <div class="project-votes-count">❤️ ${p.vote_count} vote${p.vote_count !== 1 ? 's' : ''}</div>
+            <button class="vote-btn" id="vbtn-${p._id}" onclick="openVoteModal('${p._id}','${escapeAttr(p.project_name)}','${escapeAttr(p.team_name)}')">
+              🗳️ Vote
+            </button>
+          </div>`;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterProjects() {
+            const q = document.getElementById('search-input').value.toLowerCase();
+            const cat = document.querySelector('.cat-btn.active')?.dataset.cat || 'all';
+            const filtered = allProjects.filter(p => {
+                const matchCat = cat === 'all' || p.category === cat;
+                const matchQ = !q || p.project_name.toLowerCase().includes(q) || p.team_name.toLowerCase().includes(q);
+                return matchCat && matchQ;
+            });
+            renderProjects(filtered);
+            // Always re-check vote status after rendering to keep buttons correct
+            checkVoteStatus();
+        }
+
+        document.getElementById('search-input')?.addEventListener('input', filterProjects);
+
+        function openVoteModal(id, name, team) {
+            if (votesRemaining <= 0) { toast('You have used all 3 votes!', 'warning'); return; }
+            pendingProjectId = id;
+            pendingProjectName = name;
+            document.getElementById('modal-project-name').textContent = name;
+            document.getElementById('modal-team-name').textContent = 'by ' + team;
+            document.getElementById('modal-votes-left').textContent = 'After this vote, you will have ' + (votesRemaining - 1) + ' vote(s) remaining.';
+            document.getElementById('confirm-modal').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('confirm-modal').classList.remove('open');
+            pendingProjectId = null;
+        }
+
+        async function confirmVote() {
+            if (!pendingProjectId) return;
+            const btn = document.getElementById('confirm-vote-btn');
+            btn.disabled = true; btn.textContent = 'Submitting...';
+
+            try {
+                const res = await fetch('/api/votes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ project_id: pendingProjectId, fingerprint: FINGERPRINT })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    // Mark locally
+                    const localVotes = JSON.parse(localStorage.getItem('evl_voted') || '[]');
+                    localVotes.push(pendingProjectId);
+                    localStorage.setItem('evl_voted', JSON.stringify(localVotes));
+
+                    updateVoteDots(data.votes_used, 3);
+                    closeModal();
+                    toast(data.message, 'success');
+
+                    // Visual: mark card as voted
+                    const card = document.getElementById('pcard-' + pendingProjectId);
+                    if (card) card.classList.add('voted');
+
+                    if (data.votes_remaining === 0) {
+                        // Redirect to thank you
+                        setTimeout(() => { window.location.href = '/thankyou'; }, 1500);
+                    }
+                } else {
+                    closeModal();
+                    toast(data.message, 'error', 6000);
+                    if (data.votes_remaining === 0) updateVoteDots(3, 3);
+                }
+            } catch (e) {
+                closeModal(); toast('Network error. Please try again.', 'error');
+            } finally {
+                btn.disabled = false; btn.textContent = 'Confirm Vote 🗳️';
+            }
+        }
+
+        function showWinnerState(winner) {
+            const grid = document.getElementById('projects-grid');
+            grid.style.display = 'none';
+            document.getElementById('closed-state').innerHTML = `
+        <div class="closed-banner">
+          <div style="font-size:4rem;margin-bottom:1rem;animation:float 3s infinite">🏆</div>
+          <h2 style="margin-bottom:0.5rem;color:var(--gold);">Winner Declared!</h2>
+          <p style="color:var(--text-secondary);margin-bottom:1.5rem;">Voting has ended. Check out the results on the leaderboard.</p>
+          <a href="/leaderboard" class="btn btn-warning btn-lg">🎉 See Results</a>
+        </div>`;
+            document.getElementById('closed-state').style.display = 'block';
+        }
+
+        // Socket.IO listeners
+        socket.on('voting_started', () => { toast('Voting has started!', 'success'); location.reload(); });
+        socket.on('voting_stopped', () => { toast('Voting has ended.', 'warning'); setTimeout(() => location.reload(), 1500); });
+        socket.on('winner_declared', () => { toast('A winner has been declared!', 'info'); setTimeout(() => location.reload(), 2000); });
+        socket.on('system_reset', () => {
+            // Clear stale local vote data and reload so buttons re-enable
+            localStorage.removeItem('evl_voted');
+            localStorage.removeItem('evl_fp');
+            toast('Votes have been reset. Reloading...', 'info', 2000);
+            setTimeout(() => location.reload(), 2000);
+        });
+        socket.on('vote_update', (data) => {
+            allProjects = data.projects;
+            // Update vote counts in existing cards without full re-render to avoid disabling buttons
+            allProjects.forEach(p => {
+                const countEl = document.querySelector(`#pcard-${p._id} .project-votes-count`);
+                if (countEl) countEl.textContent = `❤️ ${p.vote_count} vote${p.vote_count !== 1 ? 's' : ''}`;
+            });
+        });
+
+        function escapeHtml(str) { return String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s])); }
+        function escapeAttr(str) { return String(str).replace(/'/g, "\\'"); }
+
+        loadProjects();
+    </script>
+</body>
+
+</html>
