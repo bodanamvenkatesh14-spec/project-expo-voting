@@ -14,11 +14,11 @@
   --danger: #EF4444;
   --cyan: #06B6D4;
 
-  --bg-dark: #030712;
-  --bg-mid: #0D0D1A;
-  --bg-card: rgba(15, 15, 35, 0.8);
-  --bg-card2: rgba(20, 20, 45, 0.95);
-  --bg-glass: rgba(255, 255, 255, 0.04);
+  --bg-dark: #02020E;
+  --bg-mid: #080818;
+  --bg-card: rgba(12, 12, 30, 0.75);
+  --bg-card2: rgba(16, 16, 40, 0.95);
+  --bg-glass: rgba(255, 255, 255, 0.05);
 
   --border: rgba(124, 58, 237, 0.25);
   --border-bright: rgba(124, 58, 237, 0.6);
@@ -71,7 +71,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ─── ANIMATED BACKGROUND ─── */
+/* ─── AURORA ANIMATED BACKGROUND ─── */
 body::before {
   content: '';
   position: fixed;
@@ -80,15 +80,17 @@ body::before {
   width: 100%;
   height: 100%;
   background:
-    radial-gradient(ellipse at 10% 10%, rgba(124, 58, 237, 0.18) 0%, transparent 45%),
-    radial-gradient(ellipse at 90% 15%, rgba(6, 182, 212, 0.12) 0%, transparent 40%),
-    radial-gradient(ellipse at 50% 90%, rgba(244, 114, 182, 0.10) 0%, transparent 45%),
-    radial-gradient(ellipse at 80% 60%, rgba(16, 185, 129, 0.06) 0%, transparent 35%);
+    radial-gradient(ellipse 80% 60% at 15% 15%, rgba(124, 58, 237, 0.28) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 85% 10%, rgba(6, 182, 212, 0.20) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 60% at 50% 100%, rgba(244, 114, 182, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 90% 70%, rgba(16, 185, 129, 0.10) 0%, transparent 45%),
+    radial-gradient(ellipse 40% 30% at 10% 70%, rgba(251, 191, 36, 0.08) 0%, transparent 40%);
   pointer-events: none;
   z-index: 0;
-  animation: bgPulse 12s ease-in-out infinite alternate;
+  animation: auroraShift 18s ease-in-out infinite alternate;
 }
 
+/* Dot grid overlay */
 body::after {
   content: '';
   position: fixed;
@@ -96,12 +98,149 @@ body::after {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image:
-    linear-gradient(rgba(124, 58, 237, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(124, 58, 237, 0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
+  background-image: radial-gradient(circle, rgba(124, 58, 237, 0.18) 1px, transparent 1px);
+  background-size: 40px 40px;
   pointer-events: none;
   z-index: 0;
+  animation: gridShift 8s linear infinite;
+}
+
+/* Floating orb elements — injected via JS, see .orb class */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(80px);
+  opacity: 0.55;
+  animation: orbFloat linear infinite;
+}
+
+.orb-1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.7), transparent 70%);
+  top: -150px;
+  left: -100px;
+  animation-duration: 20s;
+}
+
+.orb-2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.5), transparent 70%);
+  top: 10%;
+  right: -120px;
+  animation-duration: 25s;
+  animation-delay: -5s;
+}
+
+.orb-3 {
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(244, 114, 182, 0.4), transparent 70%);
+  bottom: -100px;
+  left: 30%;
+  animation-duration: 22s;
+  animation-delay: -10s;
+}
+
+.orb-4 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.35), transparent 70%);
+  bottom: 20%;
+  right: 10%;
+  animation-duration: 28s;
+  animation-delay: -8s;
+}
+
+/* Scan-line sweep */
+.scanline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.5), rgba(6, 182, 212, 0.5), transparent);
+  z-index: 1;
+  pointer-events: none;
+  animation: scanSweep 6s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes auroraShift {
+  0% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  33% {
+    opacity: 0.85;
+    transform: scale(1.05) rotate(1deg);
+  }
+
+  66% {
+    opacity: 0.95;
+    transform: scale(0.97) rotate(-1deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.02) rotate(0.5deg);
+  }
+}
+
+@keyframes gridShift {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 40px 40px;
+  }
+}
+
+@keyframes orbFloat {
+  0% {
+    transform: translateY(0px) translateX(0px) scale(1);
+  }
+
+  25% {
+    transform: translateY(-40px) translateX(20px) scale(1.06);
+  }
+
+  50% {
+    transform: translateY(-20px) translateX(-30px) scale(0.95);
+  }
+
+  75% {
+    transform: translateY(-60px) translateX(15px) scale(1.04);
+  }
+
+  100% {
+    transform: translateY(0px) translateX(0px) scale(1);
+  }
+}
+
+@keyframes scanSweep {
+  0% {
+    top: -10px;
+    opacity: 0;
+  }
+
+  5% {
+    opacity: 0.7;
+  }
+
+  95% {
+    opacity: 0.3;
+  }
+
+  100% {
+    top: 100vh;
+    opacity: 0;
+  }
 }
 
 @keyframes bgPulse {

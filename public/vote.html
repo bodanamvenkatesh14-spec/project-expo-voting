@@ -427,6 +427,14 @@
 </head>
 
 <body>
+    <!-- Animated Background Elements -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+    <div class="scanline"></div>
+    <canvas id="stars-canvas"
+        style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
     <nav class="navbar">
         <a href="/vote" class="navbar-brand">🗳️ TECH FORGE 2k26</a>
         <div class="navbar-logo-container">
@@ -817,6 +825,65 @@
         function escapeAttr(str) { return String(str).replace(/'/g, "\\'"); }
 
         loadProjects();
+    </script>
+
+    <!-- ✨ Star Particles Background -->
+    <script>
+        (function () {
+            const canvas = document.getElementById('stars-canvas');
+            const ctx = canvas.getContext('2d');
+            let stars = [], W, H;
+
+            function resize() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
+            }
+
+            function createStars(n) {
+                stars = [];
+                for (let i = 0; i < n; i++) {
+                    const size = Math.random() * 2.5;
+                    stars.push({
+                        x: Math.random() * W,
+                        y: Math.random() * H,
+                        r: size,
+                        alpha: Math.random() * 0.7 + 0.1,
+                        speed: Math.random() * 0.3 + 0.05,
+                        pulse: Math.random() * Math.PI * 2,
+                        pulseSpeed: Math.random() * 0.02 + 0.005,
+                        color: ['#A78BFA', '#67E8F9', '#F9A8D4', '#6EE7B7', '#FDE68A'][Math.floor(Math.random() * 5)]
+                    });
+                }
+            }
+
+            let frame = 0;
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                frame++;
+                stars.forEach(s => {
+                    s.pulse += s.pulseSpeed;
+                    const a = s.alpha * (0.5 + 0.5 * Math.sin(s.pulse));
+                    ctx.save();
+                    ctx.globalAlpha = a;
+                    ctx.fillStyle = s.color;
+                    ctx.shadowBlur = s.r * 6;
+                    ctx.shadowColor = s.color;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                    s.y -= s.speed;
+                    s.x += Math.sin(s.pulse * 0.5) * 0.15;
+                    if (s.y < -5) { s.y = H + 5; s.x = Math.random() * W; }
+                });
+                requestAnimationFrame(draw);
+            }
+
+            resize();
+            createStars(120);
+            draw();
+            window.addEventListener('resize', () => { resize(); createStars(120); });
+        })();
     </script>
 </body>
 
