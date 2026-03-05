@@ -1,80 +1,72 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vote – TECH FORGE 2k26</title>
-    <meta name="description" content="Cast your vote for the best project at the expo. You have 3 votes to use!" />
+    <title>Vote â€“ TECH FORGE 2k26</title>
+    <meta name="description" content="Cast your vote for the best project at TECH FORGE 2k26." />
     <link rel="stylesheet" href="/css/style.css" />
     <style>
-        /* ── VOTE HEADER ── */
         .vote-header {
-            padding: 2.5rem 0 1.5rem;
+            padding: 2.5rem 0 1.75rem;
             text-align: center;
             position: relative;
         }
 
-        .vote-header::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            height: 200px;
-            background: radial-gradient(ellipse, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
-            pointer-events: none;
+        .event-pill {
+            display: inline-block;
+            background: rgba(107, 33, 232, 0.10);
+            border: 1.5px solid rgba(107, 33, 232, 0.25);
+            border-radius: 999px;
+            padding: 0.4rem 1.3rem;
+            margin-bottom: 1rem;
+            font-size: 0.73rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--primary);
+            backdrop-filter: blur(8px);
         }
 
         .vote-header h1 {
             font-size: clamp(2rem, 4.5vw, 3.2rem);
-            font-weight: 800;
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 0.03em;
-            background: linear-gradient(135deg, #fff 0%, #A78BFA 50%, #F472B6 100%);
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 0.6rem;
+            line-height: 1.1;
+        }
+
+        .vote-header h1 span {
+            background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            filter: drop-shadow(0 0 30px rgba(124, 58, 237, 0.4));
         }
 
         .vote-header p {
             color: var(--text-secondary);
-            margin-top: 0.75rem;
             font-size: 1rem;
-            font-weight: 400;
+            font-weight: 500;
         }
 
         .vote-header p strong {
-            color: var(--primary-light);
+            color: var(--primary);
         }
 
-        /* ── VOTE STATUS BAR ── */
         .vote-status-bar {
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(6, 182, 212, 0.05));
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 1.1rem 1.75rem;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1.5px solid rgba(255, 255, 255, 0.85);
+            border-radius: 16px;
+            padding: 1rem 1.75rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 1rem;
             margin-bottom: 2rem;
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .vote-status-bar::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.6), rgba(6, 182, 212, 0.6), transparent);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 4px 20px rgba(107, 33, 232, 0.08);
         }
 
         .vote-status-left {
@@ -84,10 +76,9 @@
         }
 
         .vote-status-left span {
-            font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
-            font-size: 0.95rem;
-            letter-spacing: 0.02em;
+            font-size: 0.92rem;
+            color: var(--text-primary);
         }
 
         .vote-counter-display {
@@ -96,74 +87,61 @@
             align-items: center;
         }
 
-        /* ── PROJECTS GRID ── */
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
             gap: 1.5rem;
-            margin-bottom: 3rem;
+            margin-bottom: 3.5rem;
         }
 
-        /* ── PROJECT CARD ── */
         .project-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.50);
+            border: 1.5px solid rgba(255, 255, 255, 0.80);
+            border-radius: 24px;
             padding: 1.75rem;
             cursor: pointer;
             transition: var(--transition);
             position: relative;
             overflow: hidden;
             animation: fadeInUp 0.5s ease-out both;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(16px) saturate(160%);
+            box-shadow: 0 4px 24px rgba(107, 33, 232, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
         }
 
         .project-card::before {
             content: '';
             position: absolute;
-            inset: 0;
-            background: var(--gradient-primary);
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-
-        .project-card::after {
-            content: '';
-            position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            height: 3px;
+            background: var(--gradient-primary);
             opacity: 0;
             transition: opacity 0.3s;
         }
 
         .project-card:hover {
-            border-color: var(--border-bright);
-            transform: translateY(-6px) scale(1.01);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), var(--glow-primary);
+            background: rgba(255, 255, 255, 0.72);
+            border-color: rgba(107, 33, 232, 0.30);
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 20px 50px rgba(107, 33, 232, 0.18), 0 4px 12px rgba(0, 0, 0, 0.06);
         }
 
         .project-card:hover::before {
-            opacity: 0.05;
-        }
-
-        .project-card:hover::after {
             opacity: 1;
         }
 
         .project-card.voted {
-            border-color: var(--success);
-            box-shadow: 0 0 0 1px var(--success), 0 8px 32px rgba(16, 185, 129, 0.2);
+            border-color: rgba(5, 150, 105, 0.45);
+            box-shadow: 0 4px 24px rgba(5, 150, 105, 0.18), 0 0 0 1px rgba(5, 150, 105, 0.2);
         }
 
         .project-card.voted .vote-btn {
-            background: rgba(16, 185, 129, 0.15);
-            color: #34D399;
-            border: 1px solid rgba(16, 185, 129, 0.4);
+            background: rgba(5, 150, 105, 0.12);
+            color: var(--success);
+            border: 1.5px solid rgba(5, 150, 105, 0.3);
             cursor: default;
+            box-shadow: none;
         }
 
         .voted-badge {
@@ -175,12 +153,12 @@
             border-radius: 50%;
             background: var(--gradient-success);
             color: #fff;
-            font-size: 0.9rem;
             font-weight: 700;
+            font-size: 0.95rem;
             display: none;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 16px rgba(16, 185, 129, 0.5);
+            box-shadow: 0 4px 14px rgba(5, 150, 105, 0.45);
         }
 
         .project-card.voted .voted-badge {
@@ -188,11 +166,11 @@
         }
 
         .project-rank {
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
+            color: var(--text-muted);
             margin-bottom: 0.75rem;
             display: flex;
             align-items: center;
@@ -200,18 +178,18 @@
         }
 
         .project-name {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 800;
-            margin-bottom: 0.4rem;
-            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 0.35rem;
+            font-family: 'Poppins', sans-serif;
             color: var(--text-primary);
             line-height: 1.3;
         }
 
         .project-team {
-            font-size: 0.82rem;
-            color: var(--primary-light);
-            font-weight: 600;
+            font-size: 0.80rem;
+            color: var(--primary);
+            font-weight: 700;
             margin-bottom: 0.85rem;
             display: flex;
             align-items: center;
@@ -219,7 +197,7 @@
         }
 
         .project-desc {
-            font-size: 0.86rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
             line-height: 1.65;
             margin-bottom: 1.25rem;
@@ -230,61 +208,60 @@
             align-items: center;
             justify-content: space-between;
             padding-top: 1rem;
-            border-top: 1px solid var(--border-glass);
+            border-top: 1.5px solid rgba(107, 33, 232, 0.08);
         }
 
         .project-votes-count {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-            font-weight: 600;
+            gap: 0.4rem;
+            font-size: 0.83rem;
+            font-weight: 700;
             color: var(--text-secondary);
         }
 
-        /* ── VOTE BUTTON ── */
         .vote-btn {
-            padding: 0.55rem 1.25rem;
-            border-radius: 8px;
+            padding: 0.55rem 1.3rem;
+            border-radius: 999px;
             background: var(--gradient-primary);
             color: #fff;
             border: none;
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: 'Poppins', sans-serif;
             font-weight: 700;
-            font-size: 0.85rem;
-            letter-spacing: 0.03em;
+            font-size: 0.82rem;
+            letter-spacing: 0.04em;
             cursor: pointer;
             transition: var(--transition);
             display: flex;
             align-items: center;
             gap: 0.4rem;
-            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+            box-shadow: 0 4px 16px rgba(107, 33, 232, 0.38);
         }
 
         .vote-btn:hover {
-            box-shadow: 0 6px 25px rgba(124, 58, 237, 0.6);
-            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(107, 33, 232, 0.55);
+            transform: translateY(-2px) scale(1.04);
         }
 
         .vote-btn:disabled {
-            background: rgba(124, 58, 237, 0.2);
-            color: rgba(167, 139, 250, 0.6);
+            background: rgba(107, 33, 232, 0.12);
+            color: rgba(107, 33, 232, 0.45);
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
-            border: 1px solid rgba(124, 58, 237, 0.2);
+            border: 1.5px solid rgba(107, 33, 232, 0.15);
         }
 
-        /* ── LIMIT BANNER ── */
         .limit-banner {
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(245, 158, 11, 0.05));
-            border: 1px solid rgba(251, 191, 36, 0.3);
+            background: rgba(255, 243, 199, 0.75);
+            border: 1.5px solid rgba(245, 158, 11, 0.35);
             border-radius: var(--radius);
-            padding: 1.1rem 1.5rem;
+            padding: 1rem 1.5rem;
             display: none;
             align-items: center;
             gap: 1rem;
             margin-bottom: 1.5rem;
+            backdrop-filter: blur(12px);
         }
 
         .limit-banner.show {
@@ -292,27 +269,26 @@
         }
 
         .limit-banner-icon {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
         }
 
         .limit-banner-text {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 0.9rem;
+            color: #92400E;
+            font-weight: 700;
+            font-size: 0.88rem;
         }
 
-        /* ── CLOSED BANNER ── */
         .closed-banner {
             text-align: center;
-            padding: 4rem 1.5rem;
+            padding: 4.5rem 1.5rem;
         }
 
         .closed-banner-icon {
-            font-size: 4rem;
+            font-size: 4.5rem;
             margin-bottom: 1rem;
+            filter: drop-shadow(0 4px 16px rgba(107, 33, 232, 0.3));
         }
 
-        /* ── SEARCH BAR ── */
         .search-bar {
             position: relative;
             margin-bottom: 1.5rem;
@@ -331,7 +307,6 @@
             font-size: 1rem;
         }
 
-        /* ── CATEGORY FILTERS ── */
         .category-filters {
             display: flex;
             gap: 0.6rem;
@@ -340,33 +315,32 @@
         }
 
         .cat-btn {
-            padding: 0.35rem 1rem;
+            padding: 0.38rem 1.1rem;
             border-radius: 999px;
-            border: 1px solid var(--border-glass);
-            background: transparent;
+            border: 1.5px solid rgba(107, 33, 232, 0.2);
+            background: rgba(255, 255, 255, 0.55);
             color: var(--text-secondary);
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.82rem;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.8rem;
             font-weight: 600;
-            letter-spacing: 0.03em;
             cursor: pointer;
             transition: var(--transition);
+            backdrop-filter: blur(8px);
         }
 
         .cat-btn.active {
             background: var(--gradient-primary);
             color: #fff;
             border-color: transparent;
-            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
+            box-shadow: 0 4px 14px rgba(107, 33, 232, 0.35);
         }
 
         .cat-btn:hover:not(.active) {
-            border-color: var(--border-bright);
-            color: var(--primary-light);
-            background: rgba(124, 58, 237, 0.08);
+            background: rgba(255, 255, 255, 0.80);
+            border-color: rgba(107, 33, 232, 0.35);
+            color: var(--primary);
         }
 
-        /* ── LOADING ── */
         #loading-overlay {
             display: flex;
             flex-direction: column;
@@ -378,9 +352,9 @@
 
         #loading-overlay p {
             color: var(--text-secondary);
+            font-weight: 500;
         }
 
-        /* ── CARD ENTER ANIMATION STAGGER ── */
         .project-card:nth-child(1) {
             animation-delay: 0.05s;
         }
@@ -409,18 +383,14 @@
             animation-delay: 0.35s;
         }
 
-        @media (max-width: 600px) {
+        @media(max-width:600px) {
             .projects-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
             }
 
             .vote-header h1 {
-                font-size: 1.6rem;
-            }
-
-            .vote-status-bar {
-                padding: 0.85rem 1rem;
+                font-size: 1.7rem;
             }
         }
     </style>
@@ -436,7 +406,7 @@
     <canvas id="stars-canvas"
         style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
     <nav class="navbar">
-        <a href="/vote" class="navbar-brand">🗳️ TECH FORGE 2k26</a>
+        <a href="/vote" class="navbar-brand">ðŸ—³ï¸ TECH FORGE 2k26</a>
         <div class="navbar-logo-container">
             <img src="/images/ainnovate-logo.png" alt="AINNOVATE Logo" class="navbar-logo">
         </div>
@@ -452,10 +422,7 @@
     <div class="page-wrapper">
         <div class="container">
             <div class="vote-header">
-                <div
-                    style="display:inline-block;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:999px;padding:0.4rem 1.2rem;margin-bottom:1rem;font-size:0.8rem;font-weight:700;letter-spacing:0.1em;color:var(--primary-light);text-transform:uppercase;">
-                    ⚡ TECH FORGE 2k26 — Project Expo
-                </div>
+                <div class="event-pill">⚡ TECH FORGE 2k26 — Project Expo</div>
                 <h1>Cast Your <span
                         style="background:linear-gradient(135deg,#F472B6,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Votes</span>
                 </h1>
@@ -485,7 +452,7 @@
 
             <!-- Limit Banner -->
             <div class="limit-banner" id="limit-banner">
-                <span class="limit-banner-icon">⚠️</span>
+                <span class="limit-banner-icon">âš ï¸</span>
                 <span class="limit-banner-text" id="limit-banner-text">You have used all 3 votes. Thank you for
                     participating!</span>
             </div>
@@ -493,7 +460,7 @@
             <!-- Closed Banner -->
             <div id="closed-state" style="display:none;">
                 <div class="closed-banner">
-                    <div class="closed-banner-icon">🔒</div>
+                    <div class="closed-banner-icon">ðŸ”’</div>
                     <h2 style="margin-bottom:0.75rem;">Voting is Currently Closed</h2>
                     <p style="color:var(--text-secondary);margin-bottom:1.5rem;">The voting has not started yet or has
                         been closed by the organizers.<br>Check the leaderboard to see current standings.</p>
@@ -504,7 +471,7 @@
             <!-- Search & Filters -->
             <div id="filter-area" style="display:none;">
                 <div class="search-bar">
-                    <span class="search-icon">🔍</span>
+                    <span class="search-icon">ðŸ”</span>
                     <input type="text" class="form-control" id="search-input" placeholder="Search projects or teams...">
                 </div>
                 <div class="category-filters" id="category-filters">
@@ -519,7 +486,7 @@
             </div>
             <div class="projects-grid" id="projects-grid" style="display:none;"></div>
             <div id="no-projects" style="display:none; text-align:center; padding:3rem; color:var(--text-muted);">
-                <div style="font-size:3rem;margin-bottom:1rem;">📭</div>
+                <div style="font-size:3rem;margin-bottom:1rem;">ðŸ“­</div>
                 <p>No projects found. Check back soon!</p>
             </div>
         </div>
@@ -530,7 +497,7 @@
         <div class="modal">
             <div class="modal-header">
                 <h2 class="modal-title">Confirm Your Vote</h2>
-                <button class="modal-close" onclick="closeModal()">✕</button>
+                <button class="modal-close" onclick="closeModal()">âœ•</button>
             </div>
             <div style="margin-bottom:1.5rem;">
                 <p style="color:var(--text-secondary);margin-bottom:1rem;">You are voting for:</p>
@@ -545,7 +512,7 @@
             <div style="display:flex;gap:1rem;">
                 <button class="btn btn-outline btn-full" onclick="closeModal()">Cancel</button>
                 <button class="btn btn-primary btn-full" id="confirm-vote-btn" onclick="confirmVote()">Confirm Vote
-                    🗳️</button>
+                    ðŸ—³ï¸</button>
             </div>
         </div>
     </div>
@@ -575,7 +542,7 @@
 
         // Toast
         function toast(msg, type = 'info', duration = 4000) {
-            const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+            const icons = { success: 'âœ…', error: 'âŒ', info: 'â„¹ï¸', warning: 'âš ï¸' };
             const el = document.createElement('div');
             el.className = `toast toast-${type}`;
             el.innerHTML = `<span>${icons[type]}</span><span>${msg}</span>`;
@@ -597,7 +564,7 @@
             votesRemaining = remaining;
 
             if (remaining === 0) {
-                document.getElementById('limit-banner-text').textContent = '❌ You have reached the maximum 3 votes limit from this network. Thank you!';
+                document.getElementById('limit-banner-text').textContent = 'âŒ You have reached the maximum 3 votes limit from this network. Thank you!';
                 document.getElementById('limit-banner').classList.add('show');
             }
         }
@@ -703,12 +670,12 @@
                 card.innerHTML = `
           <div class="project-rank">#${i + 1} &nbsp; <span class="badge badge-primary">${p.category || 'General'}</span></div>
           <div class="project-name">${escapeHtml(p.project_name)}</div>
-          <div class="project-team">👥 ${escapeHtml(p.team_name)}</div>
+          <div class="project-team">ðŸ‘¥ ${escapeHtml(p.team_name)}</div>
           <div class="project-desc">${escapeHtml(p.description)}</div>
           <div class="project-footer">
-            <div class="project-votes-count">❤️ ${p.vote_count} vote${p.vote_count !== 1 ? 's' : ''}</div>
+            <div class="project-votes-count">â¤ï¸ ${p.vote_count} vote${p.vote_count !== 1 ? 's' : ''}</div>
             <button class="vote-btn" id="vbtn-${p._id}" onclick="openVoteModal('${p._id}','${escapeAttr(p.project_name)}','${escapeAttr(p.team_name)}')">
-              🗳️ Vote
+              ðŸ—³ï¸ Vote
             </button>
           </div>`;
                 grid.appendChild(card);
@@ -784,7 +751,7 @@
             } catch (e) {
                 closeModal(); toast('Network error. Please try again.', 'error');
             } finally {
-                btn.disabled = false; btn.textContent = 'Confirm Vote 🗳️';
+                btn.disabled = false; btn.textContent = 'Confirm Vote ðŸ—³ï¸';
             }
         }
 
@@ -793,10 +760,10 @@
             grid.style.display = 'none';
             document.getElementById('closed-state').innerHTML = `
         <div class="closed-banner">
-          <div style="font-size:4rem;margin-bottom:1rem;animation:float 3s infinite">🏆</div>
+          <div style="font-size:4rem;margin-bottom:1rem;animation:float 3s infinite">ðŸ†</div>
           <h2 style="margin-bottom:0.5rem;color:var(--gold);">Winner Declared!</h2>
           <p style="color:var(--text-secondary);margin-bottom:1.5rem;">Voting has ended. Check out the results on the leaderboard.</p>
-          <a href="/leaderboard" class="btn btn-warning btn-lg">🎉 See Results</a>
+          <a href="/leaderboard" class="btn btn-warning btn-lg">ðŸŽ‰ See Results</a>
         </div>`;
             document.getElementById('closed-state').style.display = 'block';
         }
@@ -817,7 +784,7 @@
             // Update vote counts in existing cards without full re-render to avoid disabling buttons
             allProjects.forEach(p => {
                 const countEl = document.querySelector(`#pcard-${p._id} .project-votes-count`);
-                if (countEl) countEl.textContent = `❤️ ${p.vote_count} vote${p.vote_count !== 1 ? 's' : ''}`;
+                if (countEl) countEl.textContent = `â¤ï¸ ${p.vote_count} vote${p.vote_count !== 1 ? 's' : ''}`;
             });
         });
 
@@ -827,7 +794,7 @@
         loadProjects();
     </script>
 
-    <!-- ✨ Star Particles Background -->
+    <!-- âœ¨ Star Particles Background -->
     <script>
         (function () {
             const canvas = document.getElementById('stars-canvas');

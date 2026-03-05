@@ -1,83 +1,88 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard – TECH FORGE 2k26</title>
+    <title>Admin Dashboard â€“ TECH FORGE 2k26</title>
     <meta name="description" content="Admin control panel for TECH FORGE 2k26 voting system." />
     <link rel="stylesheet" href="/css/style.css" />
     <style>
+        /* â•â• ADMIN â€” Light Glassmorphism â•â• */
         .admin-layout {
             display: grid;
-            grid-template-columns: 260px 1fr;
-            min-height: calc(100vh - 80px);
-            gap: 0;
+            grid-template-columns: 255px 1fr;
+            min-height: calc(100vh - 88px);
         }
 
         /* Sidebar */
         .sidebar {
-            background: var(--bg-card);
-            border-right: 1px solid var(--border);
-            padding: 1.5rem 1rem;
+            background: rgba(255, 255, 255, 0.45);
+            border-right: 1.5px solid rgba(255, 255, 255, 0.80);
+            padding: 1.25rem 0.75rem;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.3rem;
             position: sticky;
-            top: 80px;
-            height: calc(100vh - 80px);
+            top: 88px;
+            height: calc(100vh - 88px);
             overflow-y: auto;
+            backdrop-filter: blur(20px) saturate(180%);
+            box-shadow: 4px 0 24px rgba(107, 33, 232, 0.06);
         }
 
         .sidebar-section-title {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
             color: var(--text-muted);
-            padding: 0.5rem 0.75rem;
-            margin-top: 0.5rem;
+            padding: 0.6rem 0.85rem;
+            margin-top: 0.75rem;
+            font-weight: 800;
         }
 
         .sidebar-btn {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            border-radius: var(--radius-sm);
+            gap: 0.7rem;
+            padding: 0.7rem 0.9rem;
+            border-radius: 12px;
             cursor: pointer;
             transition: var(--transition);
-            border: none;
+            border: 1.5px solid transparent;
             background: transparent;
             color: var(--text-secondary);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 500;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
             width: 100%;
             text-align: left;
         }
 
         .sidebar-btn:hover {
-            background: rgba(108, 99, 255, 0.1);
-            color: var(--text-primary);
+            background: rgba(107, 33, 232, 0.08);
+            border-color: rgba(107, 33, 232, 0.15);
+            color: var(--primary);
         }
 
         .sidebar-btn.active {
-            background: rgba(108, 99, 255, 0.2);
-            color: var(--primary-light);
-            border-left: 3px solid var(--primary);
+            background: var(--gradient-primary);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 16px rgba(107, 33, 232, 0.30);
         }
 
         .sidebar-btn .icon {
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
-        /* Main content */
+        /* Main */
         .admin-main {
             padding: 2rem;
             overflow-y: auto;
         }
 
-        /* Stats cards */
+        /* Stat row */
         .stat-row {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -86,35 +91,64 @@
         }
 
         .stat-mini {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1.5px solid rgba(255, 255, 255, 0.85);
+            border-radius: 20px;
+            padding: 1.4rem;
             transition: var(--transition);
+            backdrop-filter: blur(16px);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(107, 33, 232, 0.07);
+        }
+
+        .stat-mini::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .stat-mini:hover {
-            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(107, 33, 232, 0.15);
+            border-color: rgba(107, 33, 232, 0.2);
+        }
+
+        .stat-mini:hover::after {
+            opacity: 1;
         }
 
         .stat-mini-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.6rem;
+            margin-bottom: 0.6rem;
         }
 
         .stat-mini-val {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 800;
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Poppins', sans-serif;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .stat-mini-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
-            margin-top: 0.1rem;
+            margin-top: 0.15rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
         }
 
-        /* Voting control card */
+        /* Control */
         .control-card {
             margin-bottom: 2rem;
         }
@@ -122,15 +156,17 @@
         .control-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
+            gap: 0.85rem;
             margin-top: 1.25rem;
         }
 
-        /* Projects table */
+        /* Table */
         .table-wrap {
             overflow-x: auto;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            border: 1.5px solid rgba(255, 255, 255, 0.80);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(107, 33, 232, 0.06);
         }
 
         table {
@@ -139,35 +175,38 @@
         }
 
         thead th {
-            background: rgba(108, 99, 255, 0.1);
-            padding: 1rem 1.25rem;
+            background: rgba(107, 33, 232, 0.07);
+            padding: 0.9rem 1.1rem;
             text-align: left;
-            font-size: 0.8rem;
+            font-size: 0.72rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             color: var(--text-secondary);
             white-space: nowrap;
+            font-weight: 800;
+            border-bottom: 1.5px solid rgba(107, 33, 232, 0.10);
         }
 
         tbody tr {
-            border-top: 1px solid var(--border);
+            border-top: 1px solid rgba(107, 33, 232, 0.06);
             transition: var(--transition);
         }
 
         tbody tr:hover {
-            background: rgba(108, 99, 255, 0.04);
+            background: rgba(107, 33, 232, 0.04);
         }
 
         tbody td {
-            padding: 1rem 1.25rem;
-            font-size: 0.9rem;
+            padding: 0.9rem 1.1rem;
+            font-size: 0.88rem;
+            color: var(--text-primary);
         }
 
         .rank-medal {
             font-size: 1.2rem;
         }
 
-        /* Section header */
+        /* Section hdr */
         .section-hdr {
             display: flex;
             align-items: center;
@@ -178,48 +217,60 @@
         }
 
         .section-hdr h2 {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 800;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-primary);
         }
 
-        /* Project form modal */
+        /* Form */
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
         }
 
-        /* Mini leaderboard in sidebar */
+        /* Mini rank */
         .mini-rank {
-            padding: 0.6rem 0.75rem;
-            border-radius: var(--radius-sm);
+            padding: 0.55rem 0.75rem;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             gap: 0.65rem;
             font-size: 0.82rem;
+            transition: var(--transition);
+            color: var(--text-secondary);
         }
 
         .mini-rank:hover {
-            background: rgba(108, 99, 255, 0.08);
+            background: rgba(107, 33, 232, 0.08);
+            color: var(--primary);
         }
 
         .mini-votes {
             margin-left: auto;
-            font-weight: 700;
-            color: var(--primary-light);
+            font-weight: 800;
+            color: var(--primary);
             font-size: 0.85rem;
         }
 
-        /* Recent votes feed */
+        /* Feed */
         .feed-item {
-            padding: 0.75rem;
-            border-radius: var(--radius-sm);
-            background: rgba(108, 99, 255, 0.06);
-            border: 1px solid var(--border);
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.50);
+            border: 1.5px solid rgba(255, 255, 255, 0.80);
             font-size: 0.85rem;
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            animation: fadeInUp 0.4s ease-out both;
+            transition: var(--transition);
+            backdrop-filter: blur(8px);
+        }
+
+        .feed-item:hover {
+            background: rgba(255, 255, 255, 0.75);
         }
 
         .feed-item-dot {
@@ -227,10 +278,42 @@
             height: 8px;
             border-radius: 50%;
             background: var(--success);
+            box-shadow: 0 0 8px rgba(5, 150, 105, 0.5);
             flex-shrink: 0;
         }
 
-        @media (max-width: 900px) {
+        /* Dashboard title */
+        .admin-page-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Danger zone */
+        .danger-zone {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1.5px solid rgba(220, 38, 38, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .danger-zone-label {
+            color: var(--danger);
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        @media(max-width:900px) {
             .admin-layout {
                 grid-template-columns: 1fr;
             }
@@ -242,7 +325,8 @@
                 flex-wrap: wrap;
                 overflow-x: auto;
                 border-right: none;
-                border-bottom: 1px solid var(--border);
+                border-bottom: 1.5px solid rgba(255, 255, 255, 0.80);
+                padding: 0.75rem;
             }
 
             .sidebar-section-title {
@@ -261,6 +345,20 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        @media(max-width:480px) {
+            .stat-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .control-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-main {
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 
@@ -274,7 +372,7 @@
     <canvas id="stars-canvas"
         style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
     <nav class="navbar">
-        <a href="/vote" class="navbar-brand">🗳️ TECH FORGE 2k26</a>
+        <a href="/vote" class="navbar-brand">ðŸ—³ï¸ TECH FORGE 2k26</a>
         <div class="navbar-logo-container">
             <img src="/images/ainnovate-logo.png" alt="AINNOVATE Logo" class="navbar-logo">
         </div>
@@ -294,19 +392,19 @@
             <aside class="sidebar">
                 <div class="sidebar-section-title">Navigation</div>
                 <button class="sidebar-btn active" onclick="showTab('overview')" id="tab-overview"><span
-                        class="icon">📊</span> Overview</button>
-                <button class="sidebar-btn" onclick="showTab('projects')" id="tab-projects"><span class="icon">📂</span>
+                        class="icon">ðŸ“Š</span> Overview</button>
+                <button class="sidebar-btn" onclick="showTab('projects')" id="tab-projects"><span class="icon">ðŸ“‚</span>
                     Projects</button>
-                <button class="sidebar-btn" onclick="showTab('votes')" id="tab-votes"><span class="icon">♻️</span> Vote
+                <button class="sidebar-btn" onclick="showTab('votes')" id="tab-votes"><span class="icon">â™»ï¸</span> Vote
                     Feed</button>
                 <div class="sidebar-section-title" style="margin-top:1rem;">Quick Stats</div>
                 <div id="sidebar-leaderboard">
                     <div style="color:var(--text-muted);font-size:0.8rem;padding:0.5rem 0.75rem;">Loading...</div>
                 </div>
                 <div class="sidebar-section-title" style="margin-top:auto;">Links</div>
-                <button class="sidebar-btn" onclick="window.open('/leaderboard','_blank')"><span class="icon">📺</span>
+                <button class="sidebar-btn" onclick="window.open('/leaderboard','_blank')"><span class="icon">ðŸ“º</span>
                     Open Leaderboard</button>
-                <button class="sidebar-btn" onclick="window.open('/vote','_blank')"><span class="icon">🗳️</span> Open
+                <button class="sidebar-btn" onclick="window.open('/vote','_blank')"><span class="icon">ðŸ—³ï¸</span> Open
                     Voting Page</button>
             </aside>
 
@@ -319,29 +417,29 @@
                         <h1 style="font-size:1.6rem;">Admin Dashboard</h1>
                         <div style="display:flex;align-items:center;gap:0.75rem;">
                             <span class="status-dot inactive" id="voting-dot-main"></span>
-                            <span id="voting-status-main" style="font-weight:600;font-size:0.9rem;">–</span>
+                            <span id="voting-status-main" style="font-weight:600;font-size:0.9rem;">â€“</span>
                         </div>
                     </div>
 
                     <div class="stat-row" id="stat-row">
                         <div class="stat-mini">
-                            <div class="stat-mini-icon">📂</div>
-                            <div class="stat-mini-val" id="s-projects">–</div>
+                            <div class="stat-mini-icon">ðŸ“‚</div>
+                            <div class="stat-mini-val" id="s-projects">â€“</div>
                             <div class="stat-mini-label">Projects</div>
                         </div>
                         <div class="stat-mini">
-                            <div class="stat-mini-icon">🗳️</div>
-                            <div class="stat-mini-val" id="s-votes">–</div>
+                            <div class="stat-mini-icon">ðŸ—³ï¸</div>
+                            <div class="stat-mini-val" id="s-votes">â€“</div>
                             <div class="stat-mini-label">Total Votes</div>
                         </div>
                         <div class="stat-mini">
-                            <div class="stat-mini-icon">👥</div>
-                            <div class="stat-mini-val" id="s-voters">–</div>
+                            <div class="stat-mini-icon">ðŸ‘¥</div>
+                            <div class="stat-mini-val" id="s-voters">â€“</div>
                             <div class="stat-mini-label">Unique Voters</div>
                         </div>
                         <div class="stat-mini">
-                            <div class="stat-mini-icon">🏆</div>
-                            <div class="stat-mini-val" id="s-leader">–</div>
+                            <div class="stat-mini-icon">ðŸ†</div>
+                            <div class="stat-mini-val" id="s-leader">â€“</div>
                             <div class="stat-mini-label">Current Leader</div>
                         </div>
                     </div>
@@ -351,16 +449,16 @@
                         <p style="color:var(--text-secondary);font-size:0.9rem;">Manage the voting lifecycle from here.
                         </p>
                         <div class="control-grid">
-                            <button class="btn btn-success" id="btn-start" onclick="startVoting()">▶️ Start
+                            <button class="btn btn-success" id="btn-start" onclick="startVoting()">â–¶ï¸ Start
                                 Voting</button>
-                            <button class="btn btn-danger" id="btn-stop" onclick="stopVoting()">⏹️ Stop Voting</button>
-                            <button class="btn btn-warning" id="btn-winner" onclick="declareWinner()">🏆 Declare
+                            <button class="btn btn-danger" id="btn-stop" onclick="stopVoting()">â¹ï¸ Stop Voting</button>
+                            <button class="btn btn-warning" id="btn-winner" onclick="declareWinner()">ðŸ† Declare
                                 Winner</button>
                         </div>
                         <div
                             style="margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
-                            <span style="color:var(--text-muted);font-size:0.85rem;">⚠️ Danger Zone</span>
-                            <button class="btn btn-danger btn-sm" onclick="resetSystem()">🔄 Reset All Votes</button>
+                            <span style="color:var(--text-muted);font-size:0.85rem;">âš ï¸ Danger Zone</span>
+                            <button class="btn btn-danger btn-sm" onclick="resetSystem()">ðŸ”„ Reset All Votes</button>
                         </div>
                     </div>
 
@@ -423,7 +521,7 @@
         <div class="modal">
             <div class="modal-header">
                 <h2 class="modal-title" id="modal-title">Add Project</h2>
-                <button class="modal-close" onclick="closeProjectModal()">✕</button>
+                <button class="modal-close" onclick="closeProjectModal()">âœ•</button>
             </div>
             <form id="project-form" onsubmit="saveProject(event)">
                 <input type="hidden" id="edit-project-id" />
@@ -461,7 +559,7 @@
         <div class="modal">
             <div class="modal-header">
                 <h2 class="modal-title" id="danger-title">Confirm</h2>
-                <button class="modal-close" onclick="closeDangerModal()">✕</button>
+                <button class="modal-close" onclick="closeDangerModal()">âœ•</button>
             </div>
             <p id="danger-msg" style="color:var(--text-secondary);margin-bottom:1.5rem;"></p>
             <div style="display:flex;gap:1rem;">
@@ -485,7 +583,7 @@
         fetch('/api/auth/verify', { headers: { 'Authorization': 'Bearer ' + TOKEN } })
             .then(r => r.json()).then(d => {
                 if (!d.success) { localStorage.removeItem('evl_admin_token'); window.location.href = '/admin/login'; }
-                else document.getElementById('admin-user-badge').textContent = '👤 ' + d.username;
+                else document.getElementById('admin-user-badge').textContent = 'ðŸ‘¤ ' + d.username;
             }).catch(() => logout());
 
         function logout() {
@@ -497,7 +595,7 @@
 
         function toast(msg, type, duration) {
             type = type || 'info'; duration = duration || 4000;
-            const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+            const icons = { success: 'âœ…', error: 'âŒ', info: 'â„¹ï¸', warning: 'âš ï¸' };
             const el = document.createElement('div');
             el.className = 'toast toast-' + type;
             el.innerHTML = '<span>' + icons[type] + '</span><span>' + msg + '</span>';
@@ -536,7 +634,7 @@
                 document.getElementById('s-projects').textContent = projects.length;
                 document.getElementById('s-votes').textContent = totalVotes;
                 if (vData && vData.success) document.getElementById('s-voters').textContent = vData.unique_voters;
-                document.getElementById('s-leader').textContent = leader ? leader.project_name.split(' ')[0] : '–';
+                document.getElementById('s-leader').textContent = leader ? leader.project_name.split(' ')[0] : 'â€“';
 
                 // Voting status
                 var dot = document.getElementById('voting-dot-main');
@@ -556,7 +654,7 @@
             projs.slice(0, 5).forEach(function (p, i) {
                 var div = document.createElement('div');
                 div.className = 'mini-rank';
-                var medals = ['🥇', '🥈', '🥉'];
+                var medals = ['ðŸ¥‡', 'ðŸ¥ˆ', 'ðŸ¥‰'];
                 div.innerHTML = '<span>' + (medals[i] || '#' + (i + 1)) + '</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.82rem;">' + escapeHtml(p.project_name) + '</span><span class="mini-votes">' + p.vote_count + '</span>';
                 container.appendChild(div);
             });
@@ -569,7 +667,7 @@
             container.innerHTML = '';
             projs.forEach(function (p, i) {
                 var pct = Math.round((p.vote_count / maxV) * 100);
-                var medals = ['🥇', '🥈', '🥉'];
+                var medals = ['ðŸ¥‡', 'ðŸ¥ˆ', 'ðŸ¥‰'];
                 var row = document.createElement('div');
                 row.style.cssText = 'display:flex;align-items:center;gap:1rem;padding:0.75rem 0;border-bottom:1px solid var(--border);';
                 row.innerHTML =
@@ -601,13 +699,13 @@
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No projects yet. Add one!</td></tr>';
                 return;
             }
-            var medals = ['🥇', '🥈', '🥉'];
+            var medals = ['ðŸ¥‡', 'ðŸ¥ˆ', 'ðŸ¥‰'];
             tbody.innerHTML = '';
             projs.forEach(function (p, i) {
                 var tr = document.createElement('tr');
                 tr.innerHTML =
                     '<td><span class="rank-medal">' + (medals[i] || '#' + (i + 1)) + '</span></td>' +
-                    '<td><strong>' + escapeHtml(p.project_name) + '</strong>' + (p.is_winner ? ' <span style="color:var(--gold)">🏆</span>' : '') + '</td>' +
+                    '<td><strong>' + escapeHtml(p.project_name) + '</strong>' + (p.is_winner ? ' <span style="color:var(--gold)">ðŸ†</span>' : '') + '</td>' +
                     '<td>' + escapeHtml(p.team_name) + '</td>' +
                     '<td><span class="badge badge-primary">' + escapeHtml(p.category || 'General') + '</span></td>' +
                     '<td><strong>' + p.vote_count + '</strong></td>' +
@@ -716,7 +814,7 @@
                     var res = await fetch('/api/admin/reset', { method: 'POST', headers: authHeaders() });
                     var d = await res.json();
                     if (d.success) {
-                        toast('✅ All votes reset! Voting is now OPEN.', 'success', 5000);
+                        toast('âœ… All votes reset! Voting is now OPEN.', 'success', 5000);
                     } else {
                         toast(d.message || 'Reset failed.', 'error');
                     }
@@ -747,7 +845,7 @@
                 var projName = v.project_id ? v.project_id.project_name : 'Unknown';
                 var team = v.project_id ? v.project_id.team_name : '';
                 var time = new Date(v.timestamp).toLocaleTimeString();
-                item.innerHTML = '<div class="feed-item-dot"></div><div><strong>' + escapeHtml(projName) + '</strong> <span style="color:var(--text-muted);">by ' + escapeHtml(team) + '</span><br><span style="color:var(--text-muted);font-size:0.78rem;">IP: ' + v.ip_address + ' · ' + time + '</span></div>';
+                item.innerHTML = '<div class="feed-item-dot"></div><div><strong>' + escapeHtml(projName) + '</strong> <span style="color:var(--text-muted);">by ' + escapeHtml(team) + '</span><br><span style="color:var(--text-muted);font-size:0.78rem;">IP: ' + v.ip_address + ' Â· ' + time + '</span></div>';
                 container.appendChild(item);
             });
         }
@@ -782,7 +880,7 @@
         setInterval(loadStats, 15000);
     </script>
 
-    <!-- ✨ Star Particles -->
+    <!-- âœ¨ Star Particles -->
     <script>
         (function () {
             const canvas = document.getElementById('stars-canvas');
