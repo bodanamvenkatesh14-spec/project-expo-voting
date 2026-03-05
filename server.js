@@ -78,7 +78,12 @@ function authMW(req, res, next) {
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public'), { index: false }));
+app.use(express.static(path.join(__dirname, 'public'), {
+  index: false,
+  etag: false,
+  lastModified: false,
+  setHeaders: (res) => { res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate'); }
+}));
 app.set('trust proxy', 1);
 
 // AUTH
